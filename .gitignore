@@ -1,0 +1,6 @@
+*.pickle
+*.png
+*.zip
+**/train/
+**/test/
+notebooks/udacity-assignment/text8_reverse.txt
