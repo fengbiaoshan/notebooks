@@ -3,4 +3,5 @@
 *.zip
 **/train/
 **/test/
+**/datasets/
 notebooks/udacity-assignment/text8_reverse.txt
