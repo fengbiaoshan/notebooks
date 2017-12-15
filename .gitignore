@@ -1,4 +1,6 @@
 *.pickle
+*.pkl
+*.pyc
 *.png
 *.zip
 **/train/
