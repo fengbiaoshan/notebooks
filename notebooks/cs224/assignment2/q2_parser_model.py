@@ -144,8 +144,7 @@ class ParserModel(Model):
         w = tf.Variable(xavier_weight_init()([self.config.n_features*self.config.embed_size, self.config.hidden_size]))
         b1 = tf.Variable(tf.zeros([self.config.hidden_size],dtype=tf.float32))
         h = tf.nn.relu(tf.matmul(x, w)+b1)
-        dropout_keep = 1-self.dropout_placeholder
-        h_drop = tf.nn.dropout(h, dropout_keep)
+        h_drop = tf.nn.dropout(h, self.dropout_placeholder)
         u = tf.Variable(xavier_weight_init()([self.config.hidden_size, self.config.n_classes]))
         b2 = tf.Variable(tf.zeros([self.config.n_classes],dtype=tf.float32))
         pred = tf.matmul(h_drop, u) + b2
@@ -199,9 +198,10 @@ class ParserModel(Model):
         feed = self.create_feed_dict(inputs_batch, labels_batch=labels_batch,
                                      dropout=self.config.dropout)
         _, loss = sess.run([self.train_op, self.loss], feed_dict=feed)
+
         return loss
 
-    def run_epoch(self, sess, parser, train_examples, dev_set):
+    def run_epoch(self, sess, parser, train_examples, train_set, dev_set):
         prog = Progbar(target=1 + len(train_examples) / self.config.batch_size)
         for i, (train_x, train_y) in enumerate(minibatches(train_examples, self.config.batch_size)):
             loss = self.train_on_batch(sess, train_x, train_y)
@@ -209,14 +209,16 @@ class ParserModel(Model):
 
         print "Evaluating on dev set",
         dev_UAS, _ = parser.parse(dev_set)
+        train_UAS,_ = parser.parse(train_set)
         print "- dev UAS: {:.2f}".format(dev_UAS * 100.0)
+        print "- train_UAS: {:.2f}".format(train_UAS * 100.0)
         return dev_UAS
 
-    def fit(self, sess, saver, parser, train_examples, dev_set):
+    def fit(self, sess, saver, parser, train_examples, train_set, dev_set):
         best_dev_UAS = 0
         for epoch in range(self.config.n_epochs):
             print "Epoch {:} out of {:}".format(epoch + 1, self.config.n_epochs)
-            dev_UAS = self.run_epoch(sess, parser, train_examples, dev_set)
+            dev_UAS = self.run_epoch(sess, parser, train_examples, train_set, dev_set)
             if dev_UAS > best_dev_UAS:
                 best_dev_UAS = dev_UAS
                 if saver:
@@ -230,12 +232,12 @@ class ParserModel(Model):
         self.build()
 
 
-def main(debug=True):
+def main(debug=False):
     print 80 * "="
     print "INITIALIZING"
     print 80 * "="
     config = Config()
-    parser, embeddings, train_examples, dev_set, test_set = load_and_preprocess_data(debug)
+    parser, embeddings, train_examples, train_set, dev_set, test_set = load_and_preprocess_data(debug)
     if not os.path.exists('./data/weights/'):
         os.makedirs('./data/weights/')
 
@@ -259,7 +261,7 @@ def main(debug=True):
             print 80 * "="
             print "TRAINING"
             print 80 * "="
-            model.fit(session, saver, parser, train_examples, dev_set)
+            model.fit(session, saver, parser, train_examples, train_set, dev_set)
 
             if not debug:
                 print 80 * "="

@@ -385,7 +385,7 @@ def load_and_preprocess_data(reduced=True):
     print "Preprocessing training data..."
     train_examples = parser.create_instances(train_set)
 
-    return parser, embeddings_matrix, train_examples, dev_set, test_set,
+    return parser, embeddings_matrix, train_examples, train_set, dev_set, test_set,
 
 if __name__ == '__main__':
     pass

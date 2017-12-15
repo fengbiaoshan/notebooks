@@ -34,7 +34,7 @@ class PartialParse(object):
                         and right-arc transitions.
         """
         ### YOUR CODE HERE
-        if transition == "S" and len(self.buffer) != 0:
+        if transition == "S":
             self.stack.append(self.buffer.pop(0))
         elif transition == "LA":
             dep = (self.stack[-1], self.stack.pop(-2))
