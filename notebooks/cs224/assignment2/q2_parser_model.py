@@ -107,7 +107,7 @@ class ParserModel(Model):
             embeddings: tf.Tensor of shape (None, n_features*embed_size)
         """
         ### YOUR CODE HERE
-        embeddings_v = tf.constant(self.pretrained_embeddings, tf.float32)
+        embeddings_v = tf.Variable(self.pretrained_embeddings, tf.float32)
         input = tf.nn.embedding_lookup(embeddings_v, self.input_placeholder)
         embeddings = tf.reshape(input, [-1,self.config.n_features*self.config.embed_size])
         
@@ -189,7 +189,7 @@ class ParserModel(Model):
             train_op: The Op for training.
         """
         ### YOUR CODE HERE
-        optimizer = tf.train.GradientDescentOptimizer(self.config.lr)
+        optimizer = tf.train.AdamOptimizer(self.config.lr)
         train_op = optimizer.minimize(loss)
         ### END YOUR CODE
         return train_op
@@ -229,7 +229,7 @@ class ParserModel(Model):
         self.build()
 
 
-def main(debug=True):
+def main(debug=False):
     print 80 * "="
     print "INITIALIZING"
     print 80 * "="
