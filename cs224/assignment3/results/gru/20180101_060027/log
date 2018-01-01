@@ -1,0 +1,4 @@
+2018-01-01 06:00:29,632:INFO: Building model...
+2018-01-01 06:00:41,897:INFO: took 12.26 seconds
+2018-01-01 06:00:44,141:INFO: Epoch 1 out of 10
+2018-01-01 06:01:20,325:INFO: Evaluating on development data
